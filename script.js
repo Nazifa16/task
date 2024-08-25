@@ -4,12 +4,16 @@ const listContainer = document.getElementById("list-container");
 const totalCount = document.getElementById("total-count");
 const totalPrice = document.getElementById("total-price");
 
-let products = []; // array to hold all products
+let products = JSON.parse(localStorage.getItem("products")) || [];
 
 function updateSummary() {
   const total = products.reduce((sum, product) => sum + product.price, 0);
   totalCount.innerText = products.length;
   totalPrice.innerText = total;
+}
+
+function addToLocalStorage() {
+  localStorage.setItem("products", JSON.stringify(products));
 }
 
 function renderList() {
@@ -25,7 +29,7 @@ function renderList() {
 }
 
 function addProduct() {
-  const productName = inputProduct.value;
+  const productName = inputProduct.value.trim();
   const productPrice = parseFloat(inputPrice.value);
 
   if (productName === "" || isNaN(productPrice)) {
@@ -40,6 +44,7 @@ function addProduct() {
     alert("This product is already in the list");
   } else {
     products.push({ name: productName, price: productPrice });
+    addToLocalStorage();
     renderList();
     updateSummary();
   }
@@ -51,10 +56,12 @@ function addProduct() {
 function removeProduct(index) {
   // remove the product at the specified index
   products.splice(index, 1);
+  addToLocalStorage();
   renderList();
   updateSummary();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  renderList();
   updateSummary();
 });
